@@ -14,6 +14,10 @@ export default function HabitDetailScreen() {
   const habit = useHabitStore((s) => s.findHabitInStore(Number(id)));
   const completions = useHabitStore((s) => s.completions);
 
+  const currentStreak = useHabitStore(s => s.calculateCurrentStreak(Number(id)));
+  const longestStreak = useHabitStore(s => s.calculateLongestStreak(Number(id)));
+
+
   if (!habit) return <Text>Habit not found.</Text>;
 
   // Convert completions to markedDates
@@ -47,8 +51,8 @@ export default function HabitDetailScreen() {
 
       {/* Stats */}
       <View style={{ flexDirection: "row", marginBottom: 12 }}>
-        <HabitStatsCard label="Current Streak" value="7 days" icon="🔥" />
-        <HabitStatsCard label="Longest Streak" value="14 days" icon="🏅" />
+        <HabitStatsCard label="Current Streak" value={`${currentStreak} days`} icon="🔥" />
+        <HabitStatsCard label="Longest Streak" value={`${longestStreak} days`} icon="🏅" />
       </View>
 
       <View style={{ flexDirection: "row", marginBottom: 16 }}>

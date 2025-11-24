@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { formatDate, isConsecutive, subtractDays } from "../utils/dateUtils";
 import { db } from "./db";
 import { HabitDB } from "./habitDB";
 
@@ -34,6 +35,10 @@ type HabitState = {
     isHabitDoneToday: (habitId: number) => boolean;
 
     getTodayHabits: () => Habit[];
+
+    calculateCurrentStreak: (habitId: number) => number;
+    calculateLongestStreak: (habitId: number) => number;
+    getHabitCompletionDates: (habitId: number) => string[];
 
 
     getHabitById: (id: number) => Habit | null;       // DB lookup
@@ -142,6 +147,81 @@ export const useHabitStore = create<HabitState>((set, get) => ({
             return false;
         });
     },
+
+    getHabitCompletionDates: (habitId: number) => {
+        const completions = get().completions
+            .filter(c => c.habitId === habitId)
+            .map(c => c.date)
+            .sort(); // ascending YYYY-MM-DD
+
+        return completions;
+    },
+
+    calculateCurrentStreak: (habitId: number) => {
+        const { getHabitCompletionDates, findHabitInStore } = get();
+        const habit = findHabitInStore(habitId);
+        if (!habit) return 0;
+
+        const dates = getHabitCompletionDates(habitId);
+        if (dates.length === 0) return 0;
+
+        const today = formatDate(new Date());
+        let streak = 0;
+
+        // CASE 1: Today is completed → streak starts today
+        if (dates.includes(today)) {
+            streak = 1;
+        } else {
+            // Today is not completed → check if yesterday was completed
+            const yesterday = subtractDays(today, 1);
+            if (!dates.includes(yesterday)) {
+                return 0; // streak broken
+            }
+            streak = 1;
+        }
+
+        // Continue backwards
+        let index = dates.indexOf(streak === 1 && dates.includes(today) ? today : subtractDays(today, 1));
+
+        while (index > 0) {
+            const prev = dates[index - 1];
+            const curr = dates[index];
+
+            if (isConsecutive(prev, curr)) {
+                streak++;
+            } else {
+                break;
+            }
+            index--;
+        }
+
+        return streak;
+    },
+
+    calculateLongestStreak: (habitId: number) => {
+        const { getHabitCompletionDates } = get();
+
+        const dates = getHabitCompletionDates(habitId);
+        if (dates.length === 0) return 0;
+
+        let maxStreak = 1;
+        let current = 1;
+
+        for (let i = 1; i < dates.length; i++) {
+            if (isConsecutive(dates[i - 1], dates[i])) {
+                current++;
+            } else {
+                maxStreak = Math.max(maxStreak, current);
+                current = 1;
+            }
+        }
+
+        maxStreak = Math.max(maxStreak, current);
+        return maxStreak;
+    },
+
+
+
 
 
     // Fetch fresh habit from SQLite

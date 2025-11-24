@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { db } from "./db";
+import { HabitDB } from "./habit.db";
 
 export type Habit = {
     id: number;
@@ -43,15 +44,15 @@ export const useHabitStore = create<HabitState>((set, get) => ({
     habits: [],
     completions: [],
 
-    // Load habits from DB
-    loadHabits: () => {
-        const rows = db.getAllSync<Habit>("SELECT * FROM habits");
-        set({ habits: rows });
+    // Load habits
+    loadHabits: async () => {
+        set({ habits: await HabitDB.getAll() });
     },
 
-    // Load completions (for showing today's done state)
-    loadCompletions: () => {
-        const rows = db.getAllSync<HabitCompletion>(
+
+    // Load completions
+    loadCompletions: async () => {
+        const rows = await db.getAllAsync<HabitCompletion>(
             "SELECT * FROM habit_completions"
         );
         set({ completions: rows });
@@ -61,41 +62,31 @@ export const useHabitStore = create<HabitState>((set, get) => ({
     addHabit: async ({ title, description, scheduleType, daysOfWeek }) => {
         await db.runAsync(
             `
-        INSERT INTO habits (title, description, scheduleType, daysOfWeek)
-        VALUES (?, ?, ?, ?)
-        `,
+            INSERT INTO habits (title, description, scheduleType, daysOfWeek)
+            VALUES (?, ?, ?, ?)
+            `,
             [title, description, scheduleType, daysOfWeek ?? null]
         );
 
-        const rows = await db.getAllAsync<Habit>("SELECT * FROM habits");
-
-        set({ habits: rows });
+        // reload fresh data
+        get().loadHabits();
     },
 
 
     // Update habit
     updateHabit: async (id, data) => {
-        const fields = Object.keys(data)
-            .map((k) => `${k}=?`)
-            .join(", ");
+        const fields = Object.keys(data).map((k) => `${k}=?`).join(", ");
+        const values = [...Object.values(data), id];
 
-        const values = Object.values(data);
-        values.push(id);
+        await db.runAsync(`UPDATE habits SET ${fields} WHERE id=?`, values);
 
-       await db.runAsync(`UPDATE habits SET ${fields} WHERE id=?`, values);
-
-        // Reload
-        get().loadHabits();
+        await get().loadHabits();
     },
 
     // Delete habit
-    deleteHabit: (id) => {
-        db.runAsync("DELETE FROM habits WHERE id=?", [id]);
-
-        set((state) => ({
-            habits: state.habits.filter((h) => h.id !== id),
-            completions: state.completions.filter((c) => c.habitId !== id),
-        }));
+    deleteHabit: async (id) => {
+        await HabitDB.delete(id);
+        await get().loadHabits();
     },
 
     // Mark habit as done for today
@@ -105,7 +96,6 @@ export const useHabitStore = create<HabitState>((set, get) => ({
         const done = get().isHabitDoneToday(habitId);
 
         if (done) {
-            // Uncheck -> delete completion
             await db.runAsync(
                 `DELETE FROM habit_completions WHERE habitId = ? AND date = ?`,
                 habitId,
@@ -117,17 +107,15 @@ export const useHabitStore = create<HabitState>((set, get) => ({
             }));
 
         } else {
-            // Check -> insert completion
             await db.runAsync(
                 `INSERT INTO habit_completions (habitId, date, completed) VALUES (?, ?, 1)`,
                 habitId,
                 today
             );
-            // console.log("Inserted completion for habitId:", habitId);
         }
 
         // Reload completions
-        get().loadCompletions();
+        await get().loadCompletions();
     },
 
     // Check if done today
@@ -137,6 +125,7 @@ export const useHabitStore = create<HabitState>((set, get) => ({
             (c) => c.habitId === habitId && c.date === today
         );
     },
+
 
     getTodayHabits: () => {
         const { habits } = get();

@@ -1,4 +1,4 @@
-import { initializeDatabase } from "@/lib/db";
+import { initializeDatabase } from "@/src/lib/db";
 import { Stack } from "expo-router";
 import { useEffect } from "react";
 import "../global.css";

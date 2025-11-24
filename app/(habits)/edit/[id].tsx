@@ -1,4 +1,4 @@
-import { useHabitStore } from "@/lib/habitStore";
+import { useHabitStore } from "@/src/lib/habitStore";
 import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";

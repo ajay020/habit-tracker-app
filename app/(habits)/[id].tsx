@@ -1,4 +1,4 @@
-import { Habit, useHabitStore } from "@/lib/habitStore";
+import { Habit, useHabitStore } from "@/src/lib/habitStore";
 import { FontAwesome } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";

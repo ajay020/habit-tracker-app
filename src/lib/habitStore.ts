@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { db } from "./db";
-import { HabitDB } from "./habit.db";
+import { HabitDB } from "./habitDB";
 
 export type Habit = {
     id: number;

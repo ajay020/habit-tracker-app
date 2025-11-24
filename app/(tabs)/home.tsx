@@ -10,12 +10,14 @@ export default function HomeScreen() {
   const loadHabits = useHabitStore((s) => s.loadHabits);
   const loadCompletions = useHabitStore((s) => s.loadCompletions);
 
+  const markHabitDone = useHabitStore((s) => s.markHabitDone);
+  const isHabitDoneToday = useHabitStore((s) => s.isHabitDoneToday);
+
   // SUBSCRIBE so UI re-renders
   const completions = useHabitStore((s) => s.completions);
   const habits = useHabitStore((s) => s.habits);
 
-  const markHabitDone = useHabitStore((s) => s.markHabitDone);
-  const isHabitDoneToday = useHabitStore((s) => s.isHabitDoneToday);
+
 
   // load from database once
   useEffect(() => {
@@ -39,7 +41,7 @@ export default function HomeScreen() {
               className="flex-row items-center justify-between p-4 mb-3 rounded-xl bg-gray-100"
             >
               <TouchableOpacity
-                className="flex-1"
+                className="flex-1 mr-2"
                 onPress={() => {
                   console.log("Item tapped: ", item.id);
                 }}
@@ -52,7 +54,7 @@ export default function HomeScreen() {
               </TouchableOpacity>
 
               <Checkbox
-                className="p-2"
+                className="p-3"
                 value={done}
                 onValueChange={(v) => {
                   console.log("Checkbox tapped!");

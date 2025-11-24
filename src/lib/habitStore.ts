@@ -126,7 +126,6 @@ export const useHabitStore = create<HabitState>((set, get) => ({
         );
     },
 
-
     getTodayHabits: () => {
         const { habits } = get();
         const today = new Date();

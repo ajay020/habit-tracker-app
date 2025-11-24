@@ -1,76 +1,91 @@
-import { Habit, useHabitStore } from "@/src/lib/habitStore";
-import { FontAwesome } from "@expo/vector-icons";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useLocalSearchParams } from "expo-router";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 
-export default function HabitDetails() {
-  const { id } = useLocalSearchParams();
-  const habitId = Number(id);
+import { HabitInfoCard } from "@/src/components/HabitInfoCard";
+import { HabitStatsCard } from "@/src/components/HabitStatsCard";
+import { NotesSection } from "@/src/components/NotesSection";
+import { WeeklyProgressChart } from "@/src/components/WeeklyProgressChart";
 
-  const router = useRouter();
+import { CalendarSection } from "@/src/components/CalendarSection";
+import { useHabitStore } from "@/src/lib/habitStore";
 
-  const { findHabitInStore, getHabitById, deleteHabit } = useHabitStore();
+export default function HabitDetailScreen() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const habit = useHabitStore((s) => s.findHabitInStore(Number(id)));
+  const completions = useHabitStore((s) => s.completions);
 
-  const [habit, setHabit] = useState<Habit | null>(null);
+  if (!habit) return <Text>Habit not found.</Text>;
 
-  // Load habit from store or DB
-  useEffect(() => {
-    let h = findHabitInStore(habitId);
-
-    if (!h) {
-      console.log("Fetching from DB...");
-      h = getHabitById(habitId);
-    }
-
-    setHabit(h);
-  }, [habitId]);
-
-  if (!habit) {
-    return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-white">
-        <Text className="text-lg font-medium">Habit not found...</Text>
-      </SafeAreaView>
-    );
-  }
-
-  const handleDelete = () => {
-    deleteHabit(habitId);
-    router.back(); // return to previous screen
-  };
+  // Convert completions to markedDates
+  const markedDates: any = {};
+  completions
+    .filter((c) => c.habitId === Number(id))
+    .forEach((c) => {
+      markedDates[c.date] = {
+        startingDay: true,
+        endingDay: true,
+        color: "#FFC107",
+        textColor: "black",
+      };
+    });
 
   return (
-    <SafeAreaView className="flex-1 bg-white p-5">
-      {/* Header */}
-      <View className="flex-row justify-between items-center mb-6">
-        <TouchableOpacity onPress={() => router.back()}>
-          <FontAwesome name="chevron-left" size={24} color="#333" />
-        </TouchableOpacity>
+    <ScrollView
+      style={{ flex: 1, backgroundColor: "#f8f8f8", padding: 16 }}
+    >
+      <HabitInfoCard
+        title={habit.title}
+        description={habit.description}
+        scheduleText={
+          habit.scheduleType === "daily"
+            ? "Daily Habit"
+            : `Weekly on ${habit.daysOfWeek}`
+        }
+      />
 
-        <TouchableOpacity onPress={() => router.push(`/(habits)/edit/${habitId}`)}>
-          <FontAwesome name="pencil" size={24} color="#333" />
-        </TouchableOpacity>
+      <CalendarSection markedDates={markedDates} />
+
+      {/* Stats */}
+      <View style={{ flexDirection: "row", marginBottom: 12 }}>
+        <HabitStatsCard label="Current Streak" value="7 days" icon="🔥" />
+        <HabitStatsCard label="Longest Streak" value="14 days" icon="🏅" />
       </View>
 
-      {/* Content */}
-      <View>
-        <Text className="text-3xl font-bold text-gray-900">{habit.title}</Text>
-
-        <Text className="text-gray-600 mt-3 text-base leading-6">
-          {habit.description}
-        </Text>
+      <View style={{ flexDirection: "row", marginBottom: 16 }}>
+        <HabitStatsCard label="Completed" value="68" icon="✔" />
+        <HabitStatsCard label="Success Rate" value="82%" icon="📊" />
       </View>
 
-      {/* Delete Button */}
+      <WeeklyProgressChart />
+
+      <NotesSection notes={[]} />
+
       <TouchableOpacity
-        onPress={handleDelete}
-        className="bg-red-500 p-4 rounded-xl mt-10"
+        style={{
+          backgroundColor: "#FFC107",
+          padding: 14,
+          borderRadius: 24,
+          marginBottom: 12,
+        }}
       >
-        <Text className="text-center text-white text-lg font-semibold">
+        <Text style={{ textAlign: "center", fontWeight: "600" }}>
+          Edit Habit
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={{
+          borderWidth: 1,
+          borderColor: "red",
+          padding: 14,
+          borderRadius: 24,
+          marginBottom: 40,
+        }}
+      >
+        <Text style={{ textAlign: "center", fontWeight: "600", color: "red" }}>
           Delete Habit
         </Text>
       </TouchableOpacity>
-    </SafeAreaView>
+    </ScrollView>
   );
 }

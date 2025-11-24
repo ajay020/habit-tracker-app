@@ -40,18 +40,23 @@ export default function HomeScreen() {
             <View
               className="flex-row items-center justify-between p-4 mb-3 rounded-xl bg-gray-100"
             >
-              <TouchableOpacity
-                className="flex-1 mr-2"
-                onPress={() => {
-                  console.log("Item tapped: ", item.id);
-                }}
-                activeOpacity={0.7}
+              <Link
+                href={`/(habits)/${item.id}`}
+                asChild
               >
-                <Text className="text-lg font-medium">{item.title}</Text>
-                {item.description ? (
-                  <Text className="text-gray-500 text-sm">{item.description}</Text>
-                ) : null}
-              </TouchableOpacity>
+                <TouchableOpacity
+                  className="flex-1 mr-2"
+                  onPress={() => {
+                    console.log("Item tapped: ", item.id);
+                  }}
+                  activeOpacity={0.7}
+                >
+                  <Text className="text-lg font-medium">{item.title}</Text>
+                  {item.description ? (
+                    <Text className="text-gray-500 text-sm">{item.description}</Text>
+                  ) : null}
+                </TouchableOpacity>
+              </Link>
 
               <Checkbox
                 className="p-3"

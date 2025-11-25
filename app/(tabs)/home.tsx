@@ -17,8 +17,6 @@ export default function HomeScreen() {
   const completions = useHabitStore((s) => s.completions);
   const habits = useHabitStore((s) => s.habits);
 
-
-
   // load from database once
   useEffect(() => {
     loadHabits();

@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 import { HabitInfoCard } from "@/src/components/HabitInfoCard";
@@ -6,8 +6,10 @@ import { HabitStatsCard } from "@/src/components/HabitStatsCard";
 import { NotesSection } from "@/src/components/NotesSection";
 
 import { CalendarSection } from "@/src/components/CalendarSection";
+import ConfirmDeleteSheet from "@/src/components/ConfirmDeleteSheet";
 import WeeklyProgressChart from "@/src/components/WeeklyProgressChart";
 import { useHabitStore } from "@/src/lib/habitStore";
+import { useState } from "react";
 
 export default function HabitDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -19,9 +21,20 @@ export default function HabitDetailScreen() {
   const successRate = useHabitStore(s => s.calculateSuccessRate(Number(id), 30));
   const completedHabits = useHabitStore(s => s.getHabitCompletionDates(Number(id)).length);
 
+  const deleteHabit = useHabitStore(s => s.deleteHabit);
+  const router = useRouter(); // from expo-router
+
+
   const getWeeklyProgress = useHabitStore((s) => s.getWeeklyProgress);
   const progress = getWeeklyProgress(Number(id));
 
+  const [showDeleteSheet, setShowDeleteSheet] = useState(false);
+
+  const handleConfirmDelete = () => {
+    deleteHabit(Number(id));
+    setShowDeleteSheet(false);
+    router.back();
+  };
 
 
   if (!habit) return <Text>Habit not found.</Text>;
@@ -84,6 +97,7 @@ export default function HabitDetailScreen() {
       </TouchableOpacity>
 
       <TouchableOpacity
+        onPress={() => setShowDeleteSheet(true)}
         style={{
           borderWidth: 1,
           borderColor: "red",
@@ -96,6 +110,13 @@ export default function HabitDetailScreen() {
           Delete Habit
         </Text>
       </TouchableOpacity>
+
+      {/* Bottom Sheet */}
+      <ConfirmDeleteSheet
+        visible={showDeleteSheet}
+        onCancel={() => setShowDeleteSheet(false)}
+        onConfirm={handleConfirmDelete}
+      />
     </ScrollView>
   );
 }

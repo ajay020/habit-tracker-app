@@ -81,6 +81,34 @@ export const HabitSelectors = {
 
         if (expectedDays === 0) return 0;
         return Math.round((actualCompletions / expectedDays) * 100);
+    },
+    // HabitSelectors.ts
+    getWeeklyProgress(
+        completions: HabitCompletion[],
+        habitId: number
+    ) {
+        // Last 7 days (Mon → Sun order)
+        const today = new Date();
+        const days: string[] = [];
+
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date(today);
+            d.setDate(today.getDate() - i);
+            days.push(d.toISOString().split("T")[0]);
+        }
+
+        // All completion dates for this habit
+        const habitDates = completions
+            .filter((c) => c.habitId === habitId)
+            .map((c) => c.date);
+
+        // Build array: 1 (completed) or 0
+        const progress = days.map((d) => (habitDates.includes(d) ? 1 : 0));
+
+        return {
+            labels: days,     // ["2025-02-01", ...]
+            values: progress, // [0,1,1,0,1,0,1]
+        };
     }
 };
 

@@ -4,9 +4,9 @@ import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { HabitInfoCard } from "@/src/components/HabitInfoCard";
 import { HabitStatsCard } from "@/src/components/HabitStatsCard";
 import { NotesSection } from "@/src/components/NotesSection";
-import { WeeklyProgressChart } from "@/src/components/WeeklyProgressChart";
 
 import { CalendarSection } from "@/src/components/CalendarSection";
+import WeeklyProgressChart from "@/src/components/WeeklyProgressChart";
 import { useHabitStore } from "@/src/lib/habitStore";
 
 export default function HabitDetailScreen() {
@@ -18,6 +18,9 @@ export default function HabitDetailScreen() {
   const longestStreak = useHabitStore(s => s.calculateLongestStreak(Number(id)));
   const successRate = useHabitStore(s => s.calculateSuccessRate(Number(id), 30));
   const completedHabits = useHabitStore(s => s.getHabitCompletionDates(Number(id)).length);
+
+  const getWeeklyProgress = useHabitStore((s) => s.getWeeklyProgress);
+  const progress = getWeeklyProgress(Number(id));
 
 
 
@@ -63,7 +66,7 @@ export default function HabitDetailScreen() {
         <HabitStatsCard label="Success Rate" value={`${successRate}%`} icon="📊" />
       </View>
 
-      <WeeklyProgressChart />
+      <WeeklyProgressChart data={progress} />
 
       <NotesSection notes={[]} />
 

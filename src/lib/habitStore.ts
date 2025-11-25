@@ -24,6 +24,8 @@ type HabitState = {
     findHabitInStore: (id: number) => Habit | null;
 
     calculateSuccessRate: (habitId: number, days: number) => number;
+
+    getWeeklyProgress: (habitId: number) => { labels: string[], values: number[] };
 };
 
 export const useHabitStore = create<HabitState>((set, get) => ({
@@ -74,5 +76,10 @@ export const useHabitStore = create<HabitState>((set, get) => ({
         const completions = getHabitCompletionDates(habitId);
         return HabitSelectors.calculateSuccessRate(completions, habit, days);
     },
+    getWeeklyProgress: (habitId: number) => {
+        const { completions } = get();
+        return HabitSelectors.getWeeklyProgress(completions, habitId);
+    },
+
 
 }));

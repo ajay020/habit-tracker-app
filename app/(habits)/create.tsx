@@ -1,17 +1,8 @@
+import WeeklyDaySelector from "@/src/components/WeeklyDaySelector";
 import { useHabitStore } from "@/src/lib/habitStore";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
-
-const WEEK_DAYS = [
-    { id: 0, label: "Sun" },
-    { id: 1, label: "Mon" },
-    { id: 2, label: "Tue" },
-    { id: 3, label: "Wed" },
-    { id: 4, label: "Thu" },
-    { id: 5, label: "Fri" },
-    { id: 6, label: "Sat" },
-];
 
 export default function CreateHabitScreen() {
     const router = useRouter();
@@ -100,28 +91,10 @@ export default function CreateHabitScreen() {
 
             {/* Weekly Day Picker */}
             {scheduleType === "weekly" && (
-                <View className="flex-row flex-wrap mb-6">
-                    {WEEK_DAYS.map((d) => (
-                        <TouchableOpacity
-                            key={d.id}
-                            onPress={() => toggleDay(d.id)}
-                            className={`px-4 py-2 rounded-full m-1 ${selectedDays.includes(d.id)
-                                ? "bg-green-500"
-                                : "bg-gray-200"
-                                }`}
-                        >
-                            <Text
-                                className={
-                                    selectedDays.includes(d.id)
-                                        ? "text-white"
-                                        : "text-gray-700"
-                                }
-                            >
-                                {d.label}
-                            </Text>
-                        </TouchableOpacity>
-                    ))}
-                </View>
+                <WeeklyDaySelector
+                    selectedDays={selectedDays}
+                    onToggle={toggleDay}
+                />
             )}
 
             {/* Save Button */}

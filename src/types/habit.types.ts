@@ -2,7 +2,7 @@ export type Habit = {
     id: number;
     title: string;
     description: string;
-    scheduleType: "daily" | "weekly" | "custom";
+    scheduleType: "daily" | "weekly";
     daysOfWeek: string | null;
     startDate: string;
     createdAt: string;

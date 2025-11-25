@@ -84,6 +84,7 @@ export default function HabitDetailScreen() {
       <NotesSection notes={[]} />
 
       <TouchableOpacity
+        onPress={() => router.push(`/(habits)/edit/${id}`)}
         style={{
           backgroundColor: "#FFC107",
           padding: 14,

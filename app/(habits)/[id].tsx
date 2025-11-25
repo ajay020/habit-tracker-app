@@ -16,6 +16,8 @@ export default function HabitDetailScreen() {
 
   const currentStreak = useHabitStore(s => s.calculateCurrentStreak(Number(id)));
   const longestStreak = useHabitStore(s => s.calculateLongestStreak(Number(id)));
+  const successRate = useHabitStore(s => s.calculateSuccessRate(Number(id), 30));
+
 
 
   if (!habit) return <Text>Habit not found.</Text>;
@@ -57,7 +59,7 @@ export default function HabitDetailScreen() {
 
       <View style={{ flexDirection: "row", marginBottom: 16 }}>
         <HabitStatsCard label="Completed" value="68" icon="✔" />
-        <HabitStatsCard label="Success Rate" value="82%" icon="📊" />
+        <HabitStatsCard label="Success Rate" value={`${successRate}%`} icon="📊" />
       </View>
 
       <WeeklyProgressChart />

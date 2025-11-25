@@ -22,6 +22,8 @@ type HabitState = {
 
     getHabitById: (id: number) => Habit | null;
     findHabitInStore: (id: number) => Habit | null;
+
+    calculateSuccessRate: (habitId: number, days: number) => number;
 };
 
 export const useHabitStore = create<HabitState>((set, get) => ({
@@ -65,4 +67,12 @@ export const useHabitStore = create<HabitState>((set, get) => ({
 
     getHabitById: (id) => HabitDB.getHabitById(id),
     findHabitInStore: (id) => get().habits.find(h => h.id === id) || null,
+
+    calculateSuccessRate: (habitId: number, days = 30) => {
+        const { getHabitCompletionDates, findHabitInStore } = get();
+        const habit = findHabitInStore(habitId);
+        const completions = getHabitCompletionDates(habitId);
+        return HabitSelectors.calculateSuccessRate(completions, habit, days);
+    },
+
 }));

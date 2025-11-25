@@ -1,6 +1,6 @@
 
 import { Habit, HabitCompletion } from "../types/habit.types";
-import { formatDate, isConsecutive, subtractDays } from "../utils/dateUtils";
+import { formatDate, getScheduledDaysBetween, isConsecutive, subtractDays } from "../utils/dateUtils";
 
 export const HabitSelectors = {
     getToday(habits: Habit[]): Habit[] {
@@ -61,6 +61,27 @@ export const HabitSelectors = {
         }
         return Math.max(maxStreak, current);
     },
+
+    calculateSuccessRate(completions: string[], habit: Habit | null, days: number): number {
+        if (!habit) return 0;
+
+        // Period: last X days
+        const end = new Date();
+        const start = new Date();
+        start.setDate(start.getDate() - (days - 1));
+
+        // Count completions only inside period
+        const actualCompletions = completions.filter(date => {
+            return date >= start.toISOString().split("T")[0] &&
+                date <= end.toISOString().split("T")[0];
+        }).length;
+
+        // Count how many days user should have performed the habit
+        const expectedDays = getScheduledDaysBetween(habit, start, end);
+
+        if (expectedDays === 0) return 0;
+        return Math.round((actualCompletions / expectedDays) * 100);
+    }
 };
 
 

@@ -1,6 +1,6 @@
+import HabitListItem from "@/src/components/HabitListItem";
 import { useHabitStore } from "@/src/lib/habitStore";
 import { FontAwesome } from "@expo/vector-icons";
-import Checkbox from "expo-checkbox";
 import { Link } from "expo-router";
 import { useEffect, useMemo } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
@@ -26,7 +26,8 @@ export default function HomeScreen() {
   const todayHabits = useMemo(() => getTodayHabits(), [habits]);
 
   return (
-    <View className="flex-1 bg-slate-200 px-4  pt-6">
+    <View className="flex-1 px-4  pt-6 bg-background dark:bg-background-dark">
+
       <FlatList
         data={todayHabits}
         extraData={{ habits, completions }}
@@ -35,37 +36,7 @@ export default function HomeScreen() {
           const done = isHabitDoneToday(item.id);
 
           return (
-            <View
-              className="flex-row items-center justify-between p-4 mb-3 rounded-xl bg-gray-100"
-            >
-              <Link
-                href={`/(habits)/${item.id}`}
-                asChild
-              >
-                <TouchableOpacity
-                  className="flex-1 mr-2"
-                  onPress={() => {
-                    console.log("Item tapped: ", item.id);
-                  }}
-                  activeOpacity={0.7}
-                >
-                  <Text className="text-lg font-medium">{item.title}</Text>
-                  {item.description ? (
-                    <Text className="text-gray-500 text-sm">{item.description}</Text>
-                  ) : null}
-                </TouchableOpacity>
-              </Link>
-
-              <Checkbox
-                className="p-3"
-                value={done}
-                onValueChange={(v) => {
-                  console.log("Checkbox tapped!");
-                  markHabitDone(item.id);
-                }}
-                color={done ? "#4CAF50" : "#aaa"}
-              />
-            </View>
+            <HabitListItem habit={item} isDone={done} markHabitDone={markHabitDone} />
           );
         }}
         ListEmptyComponent={
@@ -79,7 +50,7 @@ export default function HomeScreen() {
       <Link href="/(habits)/create" asChild>
         <TouchableOpacity className="
           absolute bottom-6 right-6
-          bg-blue-600 w-16 h-16 rounded-full
+          bg-primary dark:bg-primaryDark w-16 h-16 rounded-full
           items-center justify-center shadow-lg
         ">
           <FontAwesome name="plus" size={30} color="#fff" />

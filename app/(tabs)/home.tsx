@@ -1,9 +1,7 @@
 import HabitListItem from "@/src/components/HabitListItem";
 import { useHabitStore } from "@/src/lib/habitStore";
-import { FontAwesome } from "@expo/vector-icons";
-import { Link } from "expo-router";
 import { useEffect, useMemo } from "react";
-import { FlatList, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
@@ -46,17 +44,6 @@ export default function HomeScreen() {
             </Text>
           }
         />
-
-        {/* Floating Add Button */}
-        <Link href="/(habits)/create" asChild>
-          <TouchableOpacity className="
-          absolute bottom-6 right-6
-          bg-primary dark:bg-primaryDark w-16 h-16 rounded-full
-          items-center justify-center shadow-lg
-        ">
-            <FontAwesome name="plus" size={30} color="#fff" />
-          </TouchableOpacity>
-        </Link>
       </View>
     </SafeAreaView>
   );

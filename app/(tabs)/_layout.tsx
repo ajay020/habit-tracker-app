@@ -36,10 +36,10 @@ export default function TabsLayout() {
             />
 
             <Tabs.Screen
-                name="habits"
+                name="create"
                 options={{
-                    title: "Habits",
-                    tabBarIcon: ({ color }) => <FontAwesome name="check-square" size={24} color={color} />
+                    title: "Add",
+                    tabBarIcon: ({ color }) => <FontAwesome name="plus" size={24} color={color} />
                 }}
             />
 

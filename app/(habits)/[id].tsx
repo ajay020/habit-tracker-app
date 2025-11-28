@@ -10,6 +10,7 @@ import ConfirmDeleteSheet from "@/src/components/ConfirmDeleteSheet";
 import WeeklyProgressChart from "@/src/components/WeeklyProgressChart";
 import { useHabitStore } from "@/src/lib/habitStore";
 import { useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HabitDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -53,71 +54,72 @@ export default function HabitDetailScreen() {
     });
 
   return (
-    <ScrollView
-      style={{ flex: 1, backgroundColor: "#f8f8f8", padding: 16 }}
-    >
-      <HabitInfoCard
-        title={habit.title}
-        description={habit.description}
-        scheduleText={
-          habit.scheduleType === "daily"
-            ? "Daily Habit"
-            : `Weekly on ${habit.daysOfWeek}`
-        }
-      />
+    <SafeAreaView className="flex-1 bg-background dark:bg-background-dark">
+      <ScrollView
+        className="flex-1 bg-background dark:bg-background-dark px-4 pt-8">
+        <HabitInfoCard
+          title={habit.title}
+          description={habit.description}
+          scheduleText={
+            habit.scheduleType === "daily"
+              ? "Daily Habit"
+              : `Weekly on ${habit.daysOfWeek}`
+          }
+        />
 
-      <CalendarSection markedDates={markedDates} />
+        <CalendarSection markedDates={markedDates} />
 
-      {/* Stats */}
-      <View style={{ flexDirection: "row", marginBottom: 12 }}>
-        <HabitStatsCard label="Current Streak" value={`${currentStreak} days`} icon="🔥" />
-        <HabitStatsCard label="Longest Streak" value={`${longestStreak} days`} icon="🏅" />
-      </View>
+        {/* Stats */}
+        <View style={{ flexDirection: "row", marginBottom: 12 }}>
+          <HabitStatsCard label="Current Streak" value={`${currentStreak} days`} icon="🔥" />
+          <HabitStatsCard label="Longest Streak" value={`${longestStreak} days`} icon="🏅" />
+        </View>
 
-      <View style={{ flexDirection: "row", marginBottom: 16 }}>
-        <HabitStatsCard label="Completed" value={completedHabits} icon="✔" />
-        <HabitStatsCard label="Success Rate" value={`${successRate}%`} icon="📊" />
-      </View>
+        <View style={{ flexDirection: "row", marginBottom: 16 }}>
+          <HabitStatsCard label="Completed" value={completedHabits} icon="✔" />
+          <HabitStatsCard label="Success Rate" value={`${successRate}%`} icon="📊" />
+        </View>
 
-      <WeeklyProgressChart data={progress} />
+        <WeeklyProgressChart data={progress} />
 
-      <NotesSection notes={[]} />
+        <NotesSection notes={[]} />
 
-      <TouchableOpacity
-        onPress={() => router.push(`/(habits)/edit/${id}`)}
-        style={{
-          backgroundColor: "#FFC107",
-          padding: 14,
-          borderRadius: 24,
-          marginBottom: 12,
-        }}
-      >
-        <Text style={{ textAlign: "center", fontWeight: "600" }}>
-          Edit Habit
-        </Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => router.push(`/(habits)/edit/${id}`)}
+          style={{
+            backgroundColor: "#FFC107",
+            padding: 14,
+            borderRadius: 24,
+            marginBottom: 12,
+          }}
+        >
+          <Text style={{ textAlign: "center", fontWeight: "600" }}>
+            Edit Habit
+          </Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity
-        onPress={() => setShowDeleteSheet(true)}
-        style={{
-          borderWidth: 1,
-          borderColor: "red",
-          padding: 14,
-          borderRadius: 24,
-          marginBottom: 40,
-        }}
-      >
-        <Text style={{ textAlign: "center", fontWeight: "600", color: "red" }}>
-          Delete Habit
-        </Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => setShowDeleteSheet(true)}
+          style={{
+            borderWidth: 1,
+            borderColor: "red",
+            padding: 14,
+            borderRadius: 24,
+            marginBottom: 40,
+          }}
+        >
+          <Text style={{ textAlign: "center", fontWeight: "600", color: "red" }}>
+            Delete Habit
+          </Text>
+        </TouchableOpacity>
 
-      {/* Bottom Sheet */}
-      <ConfirmDeleteSheet
-        visible={showDeleteSheet}
-        onCancel={() => setShowDeleteSheet(false)}
-        onConfirm={handleConfirmDelete}
-      />
-    </ScrollView>
+        {/* Bottom Sheet */}
+        <ConfirmDeleteSheet
+          visible={showDeleteSheet}
+          onCancel={() => setShowDeleteSheet(false)}
+          onConfirm={handleConfirmDelete}
+        />
+      </ScrollView>
+    </SafeAreaView>
   );
 }

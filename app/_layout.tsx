@@ -3,6 +3,7 @@ import { initializeDatabase } from "@/src/lib/db";
 import { useThemeStore } from "@/src/lib/themeStore";
 import { Stack } from "expo-router";
 import { useEffect } from "react";
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import "../global.css";
 
 export default function RootLayout() {
@@ -12,11 +13,13 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <ThemeProvider>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="(auth)" />
-      </Stack>
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="(auth)" />
+        </Stack>
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }

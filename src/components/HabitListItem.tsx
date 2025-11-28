@@ -5,18 +5,17 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { Habit } from '../types/habit.types';
 
 type HabitListItemProps = {
-  habit: Habit;
-  isDone: boolean;
-  markHabitDone: (id: number) => void 
+    habit: Habit;
+    isDone: boolean;
+    markHabitDone: (id: number) => void
 }
 
-export const HabitListItem = ({ habit, isDone , markHabitDone }: HabitListItemProps) => {
+export const HabitListItem = ({ habit, isDone, markHabitDone }: HabitListItemProps) => {
     return (
         <View
             className="
                     flex-row items-center justify-between
                      p-4 mb-3 rounded-xl
-                      border
                      bg-card dark:bg-card-dark
                     "
         >

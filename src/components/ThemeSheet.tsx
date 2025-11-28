@@ -2,9 +2,7 @@ import React from "react";
 import {
     Animated,
     Modal,
-    Platform,
     Pressable,
-    StyleSheet,
     Text,
     TouchableOpacity
 } from "react-native";
@@ -62,7 +60,7 @@ export default function ThemeBottomSheet({
                 {/* Header */}
                 <Text className="text-lg font-bold text-gray-900 dark:text-white mb-4">
                     Select Theme
-                </Text> 
+                </Text>
 
                 {/* Options */}
                 {themes.map((t) => (

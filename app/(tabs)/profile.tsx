@@ -60,10 +60,6 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         </Card>
 
-        <View className="bg-background dark:bg-background-dark p-4 rounded-lg">
-          <Text className="text-text dark:text-text-dark">Hello Theme!</Text>
-        </View>
-
         {/* ----------------------------------------------------
             SETTINGS SECTIONS
         ------------------------------------------------------ */}

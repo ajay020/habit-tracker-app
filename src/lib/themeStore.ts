@@ -8,15 +8,15 @@ export type ThemeMode = "light" | "dark" | "system";
 type ThemeState = {
     themeMode: ThemeMode;
     theme: AppTheme;
-    currentMode: ThemeMode;
     setThemeMode: (mode: ThemeMode) => void;
     loadThemeMode: () => Promise<void>;
 };
 
+export const getSystemTheme = () => Appearance.getColorScheme() === "dark" ? "dark" : "light";
+
 export const useThemeStore = create<ThemeState>((set, get) => ({
     themeMode: "system",
     theme: Appearance.getColorScheme() === "dark" ? darkTheme : lightTheme,
-    currentMode: Appearance.getColorScheme() === "dark" ? "dark" : "light",
 
     loadThemeMode: async () => {
         const saved = await AsyncStorage.getItem("themeMode");
@@ -35,7 +35,6 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
         set({
             themeMode: mode,
             theme: final === "dark" ? darkTheme : lightTheme,
-            currentMode: final,
         });
     },
 }));

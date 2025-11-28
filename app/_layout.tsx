@@ -8,6 +8,7 @@ import "../global.css";
 export default function RootLayout() {
   useEffect(() => {
     initializeDatabase();
+    useThemeStore.getState().loadThemeMode();
   }, []);
 
   return (

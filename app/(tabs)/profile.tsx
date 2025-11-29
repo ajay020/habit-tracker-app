@@ -1,13 +1,36 @@
 import Card from "@/src/components/card";
+import { LanguageSelector } from "@/src/components/LanguageSelector";
 import ThemeBottomSheet from "@/src/components/ThemeSheet";
+import { useTranslation } from "@/src/hooks/userTranslation";
+import { useLanguageStore } from "@/src/lib/languageStore";
 import { useThemeStore } from "@/src/lib/themeStore";
 import { Image } from "expo-image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+
+const languages = [
+  { code: 'en', name: 'English' },
+  { code: 'hi', name: 'हिन्दी' },
+  { code: 'de', name: 'Deutsch' },
+];
 
 export default function ProfileScreen() {
   const [themeVisible, setThemeVisible] = useState(false);
   const currentTheme = useThemeStore((s) => s.theme);
+  const [languageVisible, setLanguageVisible] = useState(false);
+
+  // const { language } = useLanguageStore();
+  const { t } = useTranslation();
+  const { language, loadLanguage } = useLanguageStore()
+
+  console.log("Language", language)
+
+
+  useEffect(() => {
+    console.log("Current Theme in Profile:", currentTheme.name);
+    loadLanguage();
+  }, [language]);
+
 
   const user = {
     name: "Ajay",
@@ -67,34 +90,23 @@ export default function ProfileScreen() {
           title="App Settings"
           items={[
             {
-              label: "Theme",
+              label: t('settings.theme'),
               value: currentTheme.name,
               onPress: () => setThemeVisible(true),
             },
             {
-              label: "Language",
-              value: "English",
-              onPress: () => console.log("pressed language"),
+              label: t('settings.language'),
+              value: languages.find((l) => l.code === language)?.name || "English",
+              onPress: () => {
+                setLanguageVisible(true)
+              }
             },
             {
-              label: "Notifications",
+              label: t('settings.notification'),
               value: "Enabled",
               onPress: () => { },
             },
-            {
-              label: "Start Week On",
-              value: "Monday",
-              onPress: () => { },
-            },
-          ]}
-        />
 
-        <SettingsSection
-          title="Habit Settings"
-          items={[
-            { label: "Reset All Completions", onPress: () => { } },
-            { label: "Export Data", onPress: () => { } },
-            { label: "Import Data", onPress: () => { } },
           ]}
         />
 
@@ -102,18 +114,20 @@ export default function ProfileScreen() {
             FOOTER
         ------------------------------------------------------ */}
         <Text
-          style={{ color: currentTheme.text }}
-          className="text-center mt-6"
+          className="text-text-dark dark:text-text-dark text-center mt-6"
         >
           App Version 1.0.0
         </Text>
 
+        <ThemeBottomSheet
+          visible={themeVisible}
+          onClose={() => setThemeVisible(false)}
+        />
+
       </ScrollView>
 
-      <ThemeBottomSheet
-        visible={themeVisible}
-        onClose={() => setThemeVisible(false)}
-      />
+      {/* LANGUAGE DIALOG */}
+      <LanguageSelector visible={languageVisible} onClose={() => setLanguageVisible(false)} />
     </View>
   );
 }

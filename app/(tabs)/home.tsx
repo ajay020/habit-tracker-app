@@ -16,6 +16,7 @@ export default function HomeScreen() {
   const completions = useHabitStore((s) => s.completions);
   const habits = useHabitStore((s) => s.habits);
 
+
   // load from database once
   useEffect(() => {
     loadHabits();
@@ -25,8 +26,12 @@ export default function HomeScreen() {
   const todayHabits = useMemo(() => getTodayHabits(), [habits]);
 
   return (
-    <SafeAreaView className="flex-1 bg-background dark:bg-background-dark">
-      <View className="flex-1 px-2 bg-background dark:bg-background-dark">
+    <SafeAreaView
+      edges={['top', 'bottom']}
+      className="flex-1 bg-background dark:bg-background-dark"
+    >
+
+      <View className="flex-1 px-2">
         <FlatList
           data={todayHabits}
           extraData={{ habits, completions }}

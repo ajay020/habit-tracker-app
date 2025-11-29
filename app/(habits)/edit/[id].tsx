@@ -1,3 +1,4 @@
+import Button from "@/src/components/Button";
 import WeeklyDaySelector from "@/src/components/WeeklyDaySelector";
 import { useHabitStore } from "@/src/lib/habitStore";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -61,13 +62,14 @@ export default function EditHabitScreen() {
 
     return (
         <SafeAreaView className="flex-1 bg-background dark:bg-background-dark">
-            <ScrollView className="flex-1 bg-white px-4 pb-4 mb-4">
+            <ScrollView className="flex-1  px-4 pb-4 mb-4">
                 <Text className="text-2xl font-bold mb-6">Edit Habit</Text>
 
                 {/* Title */}
                 <Text className="text-gray-600 mb-1">Title</Text>
                 <TextInput
-                    className="border border-gray-300 rounded-lg p-3 mb-4"
+
+                    className="border border-gray-300 text-text rounded-lg p-3 mb-4"
                     value={title}
                     onChangeText={setTitle}
                 />
@@ -113,9 +115,8 @@ export default function EditHabitScreen() {
                 )}
 
                 {/* Save */}
-                <TouchableOpacity onPress={handleSave} className="bg-blue-600 py-3 rounded-xl mb-10">
-                    <Text className="text-center text-white text-lg font-semibold">Save Changes</Text>
-                </TouchableOpacity>
+
+                <Button onPress={handleSave} variant="primary" label="Save changes" size="lg" className="my-4" />
             </ScrollView>
         </SafeAreaView>
     );

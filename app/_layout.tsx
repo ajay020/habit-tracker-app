@@ -1,5 +1,6 @@
 import { ThemeProvider } from "@/src/components/theme-provider";
 import { initializeDatabase } from "@/src/lib/db";
+import { useLanguageStore } from "@/src/lib/languageStore";
 import { useThemeStore } from "@/src/lib/themeStore";
 import { Stack } from "expo-router";
 import { useEffect } from "react";
@@ -7,9 +8,12 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import "../global.css";
 
 export default function RootLayout() {
+  const loadLanguage = useLanguageStore((s) => s.loadLanguage);
+
   useEffect(() => {
     initializeDatabase();
     useThemeStore.getState().loadThemeMode();
+    loadLanguage();
   }, []);
 
   return (

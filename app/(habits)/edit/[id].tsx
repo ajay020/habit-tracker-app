@@ -53,30 +53,40 @@ export default function EditHabitScreen() {
 
     return (
         <SafeAreaView className="flex-1 bg-background dark:bg-background-dark">
+            <View className="flex flex-row items-center justify-center p-4 mb-4 bg-background dark:bg-background-dark">
+                <Text className="text-2xl text-text dark:text-text-dark font-bold">
+                    Edit Habit
+                </Text>
+            </View>
             <ScrollView className="flex-1  px-4 pb-4 mb-4">
-                <Text className="text-2xl font-bold mb-6">Edit Habit</Text>
 
                 {/* Title */}
-                <Text className="text-gray-600 mb-1">Title</Text>
+                <Text className="text-text dark:text-text-dark mb-1">Title</Text>
                 <TextInput
-                    className="border border-gray-300 text-text rounded-lg p-3 mb-4"
+                    className="border border-gray-300 dark:border-gray-600
+                     text-text dark:text-text-dark
+                      rounded-lg p-3 mb-4"
                     value={title}
                     onChangeText={setTitle}
+                    placeholderTextColor={"#999"}
                 />
 
                 {/* Description */}
-                <Text className="text-gray-600 mb-1">Description</Text>
+                <Text className="text-text dark:text-text-dark mb-1">Description</Text>
                 <TextInput
-                    className="border border-gray-300 rounded-lg p-3 mb-4"
+                    className="border border-gray-300 dark:border-gray-600
+                     text-text dark:text-text-dark
+                      rounded-lg p-3 mb-4"
                     value={description}
                     onChangeText={setDescription}
+                    placeholderTextColor={"#999"}
                 />
 
                 {/* Schedule Selector */}
-                <Text className="text-gray-600 mb-2">Schedule Type</Text>
+                <Text className="text-text dark:text-text-dark mb-2">Schedule Type</Text>
                 <View className="flex-row mb-4">
                     <TouchableOpacity
-                        className={`px-4 py-2 rounded-full mr-3 ${scheduleType === "daily" ? "bg-blue-500" : "bg-gray-200"
+                        className={`px-4 py-2 rounded-full mr-3 ${scheduleType === "daily" ? "bg-primary" : "bg-gray-200"
                             }`}
                         onPress={() => setScheduleType("daily")}
                     >
@@ -86,7 +96,7 @@ export default function EditHabitScreen() {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        className={`px-4 py-2 rounded-full ${scheduleType === "weekly" ? "bg-blue-500" : "bg-gray-200"
+                        className={`px-4 py-2 rounded-full ${scheduleType === "weekly" ? "bg-primary" : "bg-gray-200"
                             }`}
                         onPress={() => setScheduleType("weekly")}
                     >
@@ -105,8 +115,21 @@ export default function EditHabitScreen() {
                 )}
 
                 {/* Save */}
+                <Button
+                    onPress={handleSave}
+                    variant="primary"
+                    label="Save changes"
+                    size="lg"
+                    className="my-4"
+                />
+                <Button
+                    onPress={() => router.back()}
+                    variant="danger"
+                    label="Cancel"
+                    size="lg"
+                    className="my-4 border-gray-400 dark:border-gray-600"
+                />
 
-                <Button onPress={handleSave} variant="primary" label="Save changes" size="lg" className="my-4" />
             </ScrollView>
         </SafeAreaView>
     );

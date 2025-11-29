@@ -44,8 +44,6 @@ export default function CreateHabitScreen() {
 
             {/* ---------- TOP BAR ---------- */}
             <View className="flex-row items-center px-4 py-4   bg-background dark:bg-background-dark">
-
-
                 <Text className="ml-3 text-xl font-semibold text-gray-900 dark:text-white">
                     Create Habit
                 </Text>
@@ -124,8 +122,6 @@ export default function CreateHabitScreen() {
 
                 {/* Save Button */}
                 <Button label="Add Habit" onPress={handleSave} variant="primary" size="lg" />
-
-                <Text  >{t("save")} </Text>
 
                 <View className="h-10" />
             </ScrollView>

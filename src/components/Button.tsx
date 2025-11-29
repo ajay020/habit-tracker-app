@@ -4,7 +4,7 @@ import { Pressable, Text } from "react-native";
 interface ButtonProps {
     label: string;
     onPress: () => void;
-    variant?: "primary" | "secondary" | "outline";
+    variant?: "primary" | "secondary" | "outline"| "danger";
     size?: "sm" | "md" | "lg";
     className?: string; // allow extra Tailwind classes
 }
@@ -13,13 +13,14 @@ const variantClasses = {
     primary: "bg-primary dark:bg-primary-dark",
     secondary: "bg-card dark:bg-card-dark",
     outline: "border border-primary dark:border-primary-dark bg-transparent",
-    
+    danger: "bg-red-600 dark:bg-red-700",
 };
 
 const varientTextClasses = {
     primary: "text-white dark:text-text-dark",
     secondary: "text-text dark:text-text-dark",
     outline: "text-primary dark:text-primary-dark",
+    danger: "text-white dark:text-text-dark",
 }
 
 const sizeClasses = {

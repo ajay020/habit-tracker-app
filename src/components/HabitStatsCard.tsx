@@ -13,7 +13,6 @@ export function HabitStatsCard({
         <View
             style={{
                 flex: 1,
-                backgroundColor: "white",
                 padding: 16,
                 borderRadius: 16,
                 margin: 4,
@@ -22,9 +21,16 @@ export function HabitStatsCard({
                 shadowRadius: 4,
                 elevation: 2,
             }}
+            className="bg-card dark:bg-card-dark"
         >
-            <Text style={{ fontSize: 16 }}>{icon} {label}</Text>
-            <Text style={{ fontSize: 22, fontWeight: "700" }}>{value}</Text>
+            <Text style={{ fontSize: 16 }} className="text-text dark:text-text-dark">
+                {icon} {label}
+            </Text>
+            <Text
+                style={{ fontSize: 22, fontWeight: "700" }}
+                className="text-text dark:text-text-dark">
+                {value}
+            </Text>
         </View>
     );
 }

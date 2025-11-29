@@ -1,11 +1,13 @@
 import { Text, View } from "react-native";
 import { Calendar } from "react-native-calendars";
+import { useThemeStore } from "../lib/themeStore";
 
 export function CalendarSection({ markedDates }: { markedDates: any }) {
+    const { theme } = useThemeStore()
     return (
         <View
+            className="bg-card dark:bg-card-dark"
             style={{
-                backgroundColor: "white",
                 padding: 16,
                 borderRadius: 16,
                 marginBottom: 16,
@@ -15,7 +17,10 @@ export function CalendarSection({ markedDates }: { markedDates: any }) {
                 elevation: 2,
             }}
         >
-            <Text style={{ fontSize: 18, fontWeight: "600", marginBottom: 10 }}>
+            <Text
+                style={{ fontSize: 18, fontWeight: "600", marginBottom: 10 }}
+                className="text-text dark:text-text-dark"
+            >
                 Completion Calendar
             </Text>
 
@@ -23,8 +28,12 @@ export function CalendarSection({ markedDates }: { markedDates: any }) {
                 markedDates={markedDates}
                 markingType="period"
                 theme={{
+                    calendarBackground: "transparent",
+                    textSectionTitleColor: theme.text,
+                    dayTextColor: theme.text,
+                    monthTextColor: theme.text,
                     selectedDayBackgroundColor: "#FFC107",
-                    todayTextColor: "#000",
+                    todayTextColor: theme.primary,
                     arrowColor: "#FFC107",
                 }}
             />

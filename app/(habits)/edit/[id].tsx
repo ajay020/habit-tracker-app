@@ -59,7 +59,6 @@ export default function EditHabitScreen() {
                 {/* Title */}
                 <Text className="text-gray-600 mb-1">Title</Text>
                 <TextInput
-
                     className="border border-gray-300 text-text rounded-lg p-3 mb-4"
                     value={title}
                     onChangeText={setTitle}

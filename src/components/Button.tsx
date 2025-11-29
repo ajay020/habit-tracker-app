@@ -13,6 +13,7 @@ const variantClasses = {
     primary: "bg-primary dark:bg-primary-dark",
     secondary: "bg-card dark:bg-card-dark",
     outline: "border border-primary dark:border-primary-dark bg-transparent",
+    
 };
 
 const varientTextClasses = {

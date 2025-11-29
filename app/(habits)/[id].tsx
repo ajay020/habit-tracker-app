@@ -9,6 +9,7 @@ import { CalendarSection } from "@/src/components/CalendarSection";
 import ConfirmDeleteSheet from "@/src/components/ConfirmDeleteSheet";
 import WeeklyProgressChart from "@/src/components/WeeklyProgressChart";
 import { useHabitStore } from "@/src/lib/habitStore";
+import { getDaysLabelsByIds } from "@/src/utils/weekDays";
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -23,13 +24,14 @@ export default function HabitDetailScreen() {
   const completedHabits = useHabitStore(s => s.getHabitCompletionDates(Number(id)).length);
 
   const deleteHabit = useHabitStore(s => s.deleteHabit);
-  const router = useRouter(); // from expo-router
-
+  const router = useRouter();
 
   const getWeeklyProgress = useHabitStore((s) => s.getWeeklyProgress);
   const progress = getWeeklyProgress(Number(id));
 
   const [showDeleteSheet, setShowDeleteSheet] = useState(false);
+
+  const weekDaysLabel = getDaysLabelsByIds(habit?.daysOfWeek ? habit.daysOfWeek.split(",").map(Number) : []);
 
   const handleConfirmDelete = () => {
     deleteHabit(Number(id));
@@ -63,7 +65,7 @@ export default function HabitDetailScreen() {
           scheduleText={
             habit.scheduleType === "daily"
               ? "Daily Habit"
-              : `Weekly on ${habit.daysOfWeek}`
+              : `Weekly on ${weekDaysLabel}`
           }
         />
 

@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { BackHandler, Pressable, ScrollView, Text, View } from "react-native";
 
 import { HabitInfoCard } from "@/src/components/HabitInfoCard";
 import { HabitStatsCard } from "@/src/components/HabitStatsCard";
@@ -10,7 +10,8 @@ import ConfirmDeleteSheet from "@/src/components/ConfirmDeleteSheet";
 import WeeklyProgressChart from "@/src/components/WeeklyProgressChart";
 import { useHabitStore } from "@/src/lib/habitStore";
 import { getDaysLabelsByIds } from "@/src/utils/weekDays";
-import { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
+import { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HabitDetailScreen() {
@@ -30,6 +31,7 @@ export default function HabitDetailScreen() {
   const progress = getWeeklyProgress(Number(id));
 
   const [showDeleteSheet, setShowDeleteSheet] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
 
   const weekDaysLabel = getDaysLabelsByIds(habit?.daysOfWeek ? habit.daysOfWeek.split(",").map(Number) : []);
 
@@ -38,7 +40,6 @@ export default function HabitDetailScreen() {
     setShowDeleteSheet(false);
     router.back();
   };
-
 
   if (!habit) return <Text>Habit not found.</Text>;
 
@@ -55,8 +56,55 @@ export default function HabitDetailScreen() {
       };
     });
 
+  useEffect(() => {
+    const subscription = BackHandler.addEventListener("hardwareBackPress", () => {
+      if (showMenu) {
+        setShowMenu(false);   // close dropdown
+        return true;          // prevent default back navigation
+      }
+      return false;           // allow normal back behavior
+    });
+
+    return () => subscription.remove();
+  }, [showMenu]);
+  
+
+  const handleToggleMenu = () => {
+    setShowMenu(!showMenu);
+  }
+
+  const handleUpdateHabit = () => {
+    setShowMenu(false);
+    router.push(`/(habits)/edit/${id}`);
+  }
+
+  const handleDeleteHabit = () => {
+    setShowMenu(false);
+    setShowDeleteSheet(true);
+  }
+
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-background-dark">
+      {/* Top App Bar */}
+      <TopBar toggleMenu={handleToggleMenu} router={router} />
+
+      {/* BACKDROP (click outside to close) */}
+      {showMenu && (
+        <Pressable
+          onPress={handleToggleMenu}
+          className="absolute inset-0 bg-transparent z-40"
+        />
+      )}
+
+      {/* DROPDOWN MENU */}
+      {showMenu && (
+        <DropDownMenu
+          id={id}
+          onEditClick={handleUpdateHabit}
+          onDeleteClick={handleDeleteHabit}
+        />
+      )}
+
       <ScrollView
         className="flex-1 bg-background dark:bg-background-dark px-4 pt-8">
         <HabitInfoCard
@@ -86,35 +134,6 @@ export default function HabitDetailScreen() {
 
         <NotesSection notes={[]} />
 
-        <TouchableOpacity
-          onPress={() => router.push(`/(habits)/edit/${id}`)}
-          style={{
-            backgroundColor: "#FFC107",
-            padding: 14,
-            borderRadius: 24,
-            marginBottom: 12,
-          }}
-        >
-          <Text style={{ textAlign: "center", fontWeight: "600" }}>
-            Edit Habit
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => setShowDeleteSheet(true)}
-          style={{
-            borderWidth: 1,
-            borderColor: "red",
-            padding: 14,
-            borderRadius: 24,
-            marginBottom: 40,
-          }}
-        >
-          <Text style={{ textAlign: "center", fontWeight: "600", color: "red" }}>
-            Delete Habit
-          </Text>
-        </TouchableOpacity>
-
         {/* Bottom Sheet */}
         <ConfirmDeleteSheet
           visible={showDeleteSheet}
@@ -124,4 +143,52 @@ export default function HabitDetailScreen() {
       </ScrollView>
     </SafeAreaView>
   );
+}
+
+
+const TopBar = (
+  { toggleMenu, router }: { toggleMenu: () => void; router: any }
+) => {
+  return (
+    <View className="flex-row items-center justify-between 
+    px-4 py-3 bg-primary dark:bg-primary-dark">
+
+      {/* Back Button */}
+      <Pressable onPress={() => router.back()}>
+        <Ionicons name="arrow-back" size={26} color="white" />
+      </Pressable>
+
+      <Text className="text-lg font-semibold text-white">Habit Details</Text>
+
+      {/* More Button */}
+      <Pressable onPress={toggleMenu}>
+        <Ionicons name="ellipsis-vertical" size={24} color="white" />
+      </Pressable>
+    </View>
+  );
+}
+
+const DropDownMenu = (
+  { id, onEditClick, onDeleteClick }:
+    { id: string; onEditClick: () => void; onDeleteClick: () => void }
+) => {
+  return (
+    <View className="absolute right-4 top-16 
+     w-40 bg-card dark:bg-card-dark
+     rounded-xl px-4 py-2 z-50">
+      <Pressable
+        className="py-2"
+        onPress={onEditClick}
+      >
+        <Text className="text-[#FFC107] text-base">Edit Habit</Text>
+      </Pressable>
+
+      <Pressable
+        className="py-2"
+        onPress={onDeleteClick}
+      >
+        <Text className="text-red-500 text-base">Delete Habit</Text>
+      </Pressable>
+    </View>
+  )
 }

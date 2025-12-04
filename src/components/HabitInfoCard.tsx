@@ -1,4 +1,5 @@
-import { Text, View } from "react-native";
+import { Text } from "react-native";
+import Card from "./card";
 
 export function HabitInfoCard({
     title,
@@ -10,27 +11,18 @@ export function HabitInfoCard({
     scheduleText: string;
 }) {
     return (
-        <View
-            style={{
-                backgroundColor: "#FFF9D6",
-                padding: 16,
-                borderRadius: 16,
-                marginBottom: 16,
-                shadowColor: "#000",
-                shadowOpacity: 0.05,
-                shadowRadius: 4,
-                elevation: 2,
-            }}
-        >
-            <Text style={{ fontSize: 22, fontWeight: "600", marginBottom: 4 }}>
+        <Card className="mb-4">
+            <Text className="text-text text-2xl dark:text-text-dark font-bold mb-2">
                 {title}
             </Text>
 
             {description ? (
-                <Text style={{ color: "#666", marginBottom: 6 }}>{description}</Text>
+                <Text
+                    className="text-textSecondary dark:text-textSecondary-dark mb-2"
+                >{description}</Text>
             ) : null}
 
-            <Text style={{ color: "#555", fontSize: 14 }}>{scheduleText}</Text>
-        </View>
+            <Text className="text-textSecondary dark:text-textSecondary-dark">{scheduleText}</Text>
+        </Card>
     );
 }

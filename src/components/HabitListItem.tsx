@@ -1,3 +1,4 @@
+import { Feather } from '@expo/vector-icons';
 import Checkbox from 'expo-checkbox';
 import { Link } from 'expo-router';
 import React from 'react';
@@ -24,16 +25,27 @@ export const HabitListItem = ({ habit, isDone, markHabitDone }: HabitListItemPro
                 asChild
             >
                 <TouchableOpacity
-                    className="flex-1 mr-2 "
+                    className="flex-1 flex-row items-center mr-2 "
                     onPress={() => {
                         console.log("habit tapped: ", habit.id);
                     }}
                     activeOpacity={0.7}
                 >
-                    <Text className="text-lg text-text dark:text-text-dark font-medium">{habit.title}</Text>
-                    {habit.description ? (
-                        <Text className="text-textSecondary dark:text-text-dark text-sm">{habit.description}</Text>
-                    ) : null}
+                    <View
+                        style={{ backgroundColor: `${habit.color}` }}
+                        className="border-1 border-gray-300 dark:border-gray-600 rounded-xl p-2">
+                        <Feather
+                            name={habit.icon as any}
+                            size={20}
+                            color={"#fff"}
+                        />
+                    </View>
+                    <View className="ml-2">
+                        <Text className="text-lg text-text dark:text-text-dark font-medium">{habit.title}</Text>
+                        {habit.description ? (
+                            <Text className="text-textSecondary dark:text-text-dark text-sm">{habit.description}</Text>
+                        ) : null}
+                    </View>
                 </TouchableOpacity>
             </Link>
 

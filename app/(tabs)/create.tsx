@@ -7,9 +7,10 @@ import { ScrollView, Text, TextInput, TouchableOpacity, View } from "react-nativ
 import { SafeAreaView } from "react-native-safe-area-context";
 
 
-import { COLORS, HABIT_ICONS } from "@/src/constants/habit";
+import CategorySelector from "@/src/components/CategorySelector";
+import ColorSelector from "@/src/components/ColorSeletor";
+import IconSelector from "@/src/components/IconSelector";
 import { Habit } from "@/src/types/habit.types";
-import { Feather } from "@expo/vector-icons";
 import { useEffect } from "react";
 
 export default function CreateHabitScreen() {
@@ -123,63 +124,25 @@ export default function CreateHabitScreen() {
 
                 {/* ---------- CATEGORY SELECT ---------- */}
                 <Text className="text-gray-700 dark:text-gray-300 mb-2 font-medium">Category</Text>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-6">
-                    {categories.map((cat) => (
-                        <TouchableOpacity
-                            key={cat.id}
-                            onPress={() => setSelectedCategory(cat.id)}
-                            className={` flex flex-row justify-between mr-3 px-4 py-2 rounded-xl border ${selectedCategory === cat.id
-                                ? "border-blue-500 bg-blue-100 dark:bg-blue-900"
-                                : "border-gray-300 dark:border-gray-600"
-                                }`}
-                        >
-                            <Feather
-                                name={cat.icon as any}
-                                size={18}
-                                color={selectedIcon === cat.icon ? "#2563eb" : "#6b7280"}
-                            />
-                            <Text className="pl-2 text-gray-800 dark:text-gray-200">{cat.title}</Text>
-                        </TouchableOpacity>
-                    ))}
-                </ScrollView>
+                <CategorySelector
+                    categories={categories}
+                    selectedCategory={selectedCategory}
+                    onSelect={setSelectedCategory}
+                />
 
                 {/* ---------- ICON SELECT ---------- */}
                 <Text className="text-gray-700 dark:text-gray-300 mb-2 font-medium">Icon</Text>
-                <View className="flex-row flex-wrap mb-6">
-                    {HABIT_ICONS.map((icon) => (
-                        <TouchableOpacity
-                            key={icon}
-                            onPress={() => setSelectedIcon(icon)}
-                            className={`w-14 h-14 rounded-xl items-center justify-center mr-3 mb-3 border ${selectedIcon === icon
-                                ? "border-blue-500 bg-blue-100 dark:bg-blue-900"
-                                : "border-gray-300 dark:border-gray-600"
-                                }`}
-                        >
-                            <Feather
-                                name={icon as any}
-                                size={24}
-                                color={selectedIcon === icon ? "#2563eb" : "#6b7280"}
-                            />
-                        </TouchableOpacity>
-                    ))}
-                </View>
+                <IconSelector
+                    selectedIcon={selectedIcon}
+                    onSelect={setSelectedIcon}
+                />
 
                 {/* ---------- COLOR SELECT ---------- */}
                 <Text className="text-gray-700 dark:text-gray-300 mb-2 font-medium">Color</Text>
-                <View className="flex-row flex-wrap mb-8">
-                    {COLORS.map((c) => (
-                        <TouchableOpacity
-                            key={c}
-                            onPress={() => setSelectedColor(c)}
-                            className={`w-10 h-10 rounded-full mr-3 mb-3`}
-                            style={{
-                                backgroundColor: c,
-                                borderWidth: selectedColor === c ? 3 : 1,
-                                borderColor: selectedColor === c ? "#000" : "#999"
-                            }}
-                        />
-                    ))}
-                </View>
+                <ColorSelector
+                    selectedColor={selectedColor}
+                    onSelect={setSelectedColor}
+                />
 
                 {/* Save Button */}
                 <Button label="Add Habit" onPress={handleSave} variant="primary" size="lg" />

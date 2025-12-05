@@ -1,17 +1,27 @@
 import { create } from "zustand";
-import { Habit, HabitCompletion } from "../types/habit.types";
+import { Category, Habit, HabitCompletion } from "../types/habit.types";
+import { CategoryDB } from "./categoryDB";
 import { HabitDB } from "./habitDB";
 import { HabitSelectors } from "./habits.selector";
 
 type HabitState = {
     habits: Habit[];
+    categories: Category[];
     completions: HabitCompletion[];
 
     loadHabits: () => void;
+    loadCategories: () => void;
     loadCompletions: () => void;
+
     addHabit: (habit: Omit<Habit, "id" | "createdAt" | "startDate">) => void;
     updateHabit: (id: number, data: Partial<Habit>) => void;
     deleteHabit: (id: number) => void;
+
+    addCategory: (category: Omit<Category, "id" | "createdAt">) => Promise<number>;
+    updateCategory: (id: number, data: Partial<Omit<Category, "id" | "createdAt">>) => void;
+    deleteCategory: (id: number) => void;
+    getCategoryById: (id: number) => Category | null;
+
     markHabitDone: (habitId: number) => void;
     isHabitDoneToday: (habitId: number) => boolean;
 
@@ -24,15 +34,18 @@ type HabitState = {
     findHabitInStore: (id: number) => Habit | null;
 
     calculateSuccessRate: (habitId: number, days: number) => number;
-
     getWeeklyProgress: (habitId: number) => { labels: string[], values: number[] };
+
+    getHabitsByCategory: (categoryId: number) => Habit[];
 };
 
 export const useHabitStore = create<HabitState>((set, get) => ({
     habits: [],
+    categories: [],
     completions: [],
 
     loadHabits: async () => set({ habits: await HabitDB.getAll() }),
+    loadCategories: async () => set({ categories: await CategoryDB.getAll() }),
     loadCompletions: async () => set({ completions: await HabitDB.loadCompletions() }),
 
     addHabit: async (habit) => {
@@ -48,6 +61,27 @@ export const useHabitStore = create<HabitState>((set, get) => ({
     deleteHabit: async (id) => {
         await HabitDB.delete(id);
         get().loadHabits();
+    },
+
+    addCategory: async (category) => {
+        const id = await CategoryDB.add(category);
+        get().loadCategories();
+        return id;
+    },
+
+    updateCategory: async (id, data) => {
+        await CategoryDB.update(id, data);
+        get().loadCategories();
+    },
+
+    deleteCategory: async (id) => {
+        await CategoryDB.delete(id);
+        get().loadCategories();
+        get().loadHabits(); // Reload habits as their categoryId may have changed
+    },
+
+    getCategoryById: (id) => {
+        return get().categories.find(c => c.id === id) || null;
     },
 
     markHabitDone: async (habitId) => {
@@ -76,10 +110,13 @@ export const useHabitStore = create<HabitState>((set, get) => ({
         const completions = getHabitCompletionDates(habitId);
         return HabitSelectors.calculateSuccessRate(completions, habit, days);
     },
+
     getWeeklyProgress: (habitId: number) => {
         const { completions } = get();
         return HabitSelectors.getWeeklyProgress(completions, habitId);
     },
 
-
+    getHabitsByCategory: (categoryId: number) => {
+        return get().habits.filter(h => h.categoryId === categoryId);
+    },
 }));

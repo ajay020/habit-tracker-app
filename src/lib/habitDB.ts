@@ -1,4 +1,4 @@
-import { Habit, HabitCompletion } from "../types/habit.types";
+import { Habit, HabitCompletion, HabitWithCategory } from "../types/habit.types";
 import { db } from "./db";
 
 export const HabitDB = {
@@ -10,11 +10,36 @@ export const HabitDB = {
         return await db.getAllAsync<HabitCompletion>("SELECT * FROM habit_completions");
     },
 
+    async getAllWithCategories(): Promise<HabitWithCategory[]> {
+        return await db.getAllAsync<HabitWithCategory>(`
+            SELECT 
+                h.*,
+                json_object(
+                    'id', c.id,
+                    'title', c.title,
+                    'icon', c.icon,
+                    'color', c.color,
+                    'createdAt', c.createdAt
+                ) as category
+            FROM habits h
+            LEFT JOIN categories c ON h.categoryId = c.id
+        `);
+    },
+
     async addHabit(habit: Omit<Habit, "id" | "createdAt" | "startDate">): Promise<void> {
         await db.runAsync(
-            `INSERT INTO habits (title, description, scheduleType, daysOfWeek, startDate, createdAt)
-       VALUES (?, ?, ?, ?, date('now'), datetime('now'))`,
-            [habit.title, habit.description, habit.scheduleType, habit.daysOfWeek]
+            `INSERT INTO habits 
+            (title, description, scheduleType, daysOfWeek, icon, color, categoryId, startDate, createdAt)
+             VALUES (?, ?, ?, ?, ?, ?, ?, date('now'), datetime('now'))`,
+            [
+                habit.title,
+                habit.description ?? null,
+                habit.scheduleType,
+                habit.daysOfWeek ?? null,
+                habit.icon || 'check-circle',
+                habit.color || '#3b82f6',
+                habit.categoryId || null
+            ]
         );
     },
 
@@ -40,6 +65,30 @@ export const HabitDB = {
                 [habitId, date]
             );
         }
+    },
+
+    getHabitWithCategory(id: number): HabitWithCategory | null {
+        return db.getFirstSync<HabitWithCategory>(`
+            SELECT 
+                h.*,
+                json_object(
+                    'id', c.id,
+                    'title', c.title,
+                    'icon', c.icon,
+                    'color', c.color,
+                    'createdAt', c.createdAt
+                ) as category
+            FROM habits h
+            LEFT JOIN categories c ON h.categoryId = c.id
+            WHERE h.id = ?
+        `, [id]) || null;
+    },
+
+    async getHabitsByCategory(categoryId: number): Promise<Habit[]> {
+        return await db.getAllAsync<Habit>(
+            "SELECT * FROM habits WHERE categoryId = ?",
+            [categoryId]
+        );
     },
 
     getHabitById(id: number): Habit | null {

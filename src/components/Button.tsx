@@ -45,7 +45,7 @@ export default function Button({
             }
         >
             <Text className={
-                `${varientTextClasses[variant]}font-semibold `}>
+                `${varientTextClasses[variant]} font-semibold `}>
                 {label}
             </Text>
         </Pressable>

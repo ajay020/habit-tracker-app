@@ -1,9 +1,13 @@
 import Button from "@/src/components/Button";
+import CategorySelector from "@/src/components/CategorySelector";
+import ColorSelector from "@/src/components/ColorSeletor";
+import IconSelector from "@/src/components/IconSelector";
 import WeeklyDaySelector from "@/src/components/WeeklyDaySelector";
 import { useHabitStore } from "@/src/lib/habitStore";
+import { Habit } from "@/src/types/habit.types";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
-import { ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 
@@ -14,15 +18,30 @@ export default function EditHabitScreen() {
     const habit = useHabitStore((s) => s.findHabitInStore(Number(id)));
     const updateHabitInDB = useHabitStore((s) => s.updateHabit);
 
-    // ----- PREFILL FORM -----
-    const [title, setTitle] = useState(habit?.title || "");
-    const [description, setDescription] = useState(habit?.description || "");
+    const categories = useHabitStore((s) => s.categories);
+
+    if (!habit) return <Text>Habit not found</Text>;
+
+    const [title, setTitle] = useState(habit.title);
+    const [description, setDescription] = useState(habit.description);
     const [scheduleType, setScheduleType] = useState<"daily" | "weekly">(
-        habit?.scheduleType || "daily"
+        habit.scheduleType
     );
 
     const [selectedDays, setSelectedDays] = useState<number[]>(
-        habit?.daysOfWeek ? habit.daysOfWeek.split(",").map(Number) : []
+        habit.daysOfWeek ? habit.daysOfWeek.split(",").map(Number) : []
+    );
+
+    const [selectedCategory, setSelectedCategory] = useState<number | null>(
+        habit.categoryId ?? null
+    );
+
+    const [selectedIcon, setSelectedIcon] = useState(
+        habit.icon || "star"
+    );
+
+    const [selectedColor, setSelectedColor] = useState(
+        habit.color || "#4ade80"
     );
 
     const toggleDay = (dayId: number) => {
@@ -36,74 +55,86 @@ export default function EditHabitScreen() {
     const handleSave = () => {
         if (!title.trim()) return;
 
-        const payload = {
+        updateHabitInDB(Number(id), {
             id: Number(id),
             title,
             description,
             scheduleType,
             daysOfWeek: scheduleType === "weekly" ? selectedDays.join(",") : null,
-        };
-
-        updateHabitInDB(Number(id), payload);
+            categoryId: selectedCategory,
+            icon: selectedIcon,
+            color: selectedColor,
+        } as Habit);
 
         router.back();
     };
 
-    if (!habit) return <Text>Habit not found</Text>;
-
     return (
         <SafeAreaView className="flex-1 bg-background dark:bg-background-dark">
-            <View className="flex flex-row items-center justify-center p-4 mb-4 bg-background dark:bg-background-dark">
-                <Text className="text-2xl text-text dark:text-text-dark font-bold">
+            {/* Header */}
+            <View className="flex flex-row items-center justify-center p-4 mb-4">
+                <Text className="text-2xl font-bold text-text dark:text-text-dark">
                     Edit Habit
                 </Text>
             </View>
-            <ScrollView className="flex-1  px-4 pb-4 mb-4">
+
+            <ScrollView className="flex-1 px-4 pb-10">
 
                 {/* Title */}
                 <Text className="text-text dark:text-text-dark mb-1">Title</Text>
                 <TextInput
-                    className="border border-gray-300 dark:border-gray-600
-                     text-text dark:text-text-dark
-                      rounded-lg p-3 mb-4"
+                    className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 text-text dark:text-text-dark mb-4"
                     value={title}
                     onChangeText={setTitle}
-                    placeholderTextColor={"#999"}
+                    placeholder="Habit name..."
+                    placeholderTextColor="#999"
                 />
 
                 {/* Description */}
                 <Text className="text-text dark:text-text-dark mb-1">Description</Text>
                 <TextInput
-                    className="border border-gray-300 dark:border-gray-600
-                     text-text dark:text-text-dark
-                      rounded-lg p-3 mb-4"
+                    className="border border-gray-300 dark:border-gray-600 rounded-lg p-3
+                    text-text dark:text-text-dark mb-4"
                     value={description}
                     onChangeText={setDescription}
-                    placeholderTextColor={"#999"}
+                    placeholder="Short description..."
+                    placeholderTextColor="#999"
                 />
 
-                {/* Schedule Selector */}
+                {/* Category */}
+                <CategorySelector
+                    categories={categories}
+                    selectedCategory={selectedCategory}
+                    onSelect={setSelectedCategory}
+                />
+
+                {/* Icon Picker */}
+                <IconSelector
+                    selectedIcon={selectedIcon}
+                    onSelect={setSelectedIcon}
+                />
+
+                {/* Color Picker */}
+                <ColorSelector
+                    selectedColor={selectedColor}
+                    onSelect={setSelectedColor}
+                />
+
+                {/* Schedule Type */}
                 <Text className="text-text dark:text-text-dark mb-2">Schedule Type</Text>
                 <View className="flex-row mb-4">
-                    <TouchableOpacity
-                        className={`px-4 py-2 rounded-full mr-3 ${scheduleType === "daily" ? "bg-primary" : "bg-gray-200"
-                            }`}
+                    <Button
+                        label="Daily"
                         onPress={() => setScheduleType("daily")}
-                    >
-                        <Text className={scheduleType === "daily" ? "text-white" : "text-gray-700"}>
-                            Daily
-                        </Text>
-                    </TouchableOpacity>
+                        variant={scheduleType === "daily" ? "primary" : "secondary"}
+                        className="mr-3"
+                    />
 
-                    <TouchableOpacity
-                        className={`px-4 py-2 rounded-full ${scheduleType === "weekly" ? "bg-primary" : "bg-gray-200"
-                            }`}
+                    <Button
+                        label="Weekly"
                         onPress={() => setScheduleType("weekly")}
-                    >
-                        <Text className={scheduleType === "weekly" ? "text-white" : "text-gray-700"}>
-                            Weekly
-                        </Text>
-                    </TouchableOpacity>
+                        variant={scheduleType === "weekly" ? "primary" : "secondary"}
+                    />
                 </View>
 
                 {/* Weekly Day Picker */}
@@ -114,22 +145,21 @@ export default function EditHabitScreen() {
                     />
                 )}
 
-                {/* Save */}
+                {/* Save / Cancel */}
                 <Button
                     onPress={handleSave}
                     variant="primary"
-                    label="Save changes"
+                    label="Save Changes"
                     size="lg"
                     className="my-4"
                 />
+
                 <Button
                     onPress={() => router.back()}
                     variant="danger"
                     label="Cancel"
                     size="lg"
-                    className="my-4 border-gray-400 dark:border-gray-600"
                 />
-
             </ScrollView>
         </SafeAreaView>
     );

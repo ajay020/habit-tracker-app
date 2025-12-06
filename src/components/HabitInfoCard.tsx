@@ -1,5 +1,5 @@
 import { Text } from "react-native";
-import Card from "./card";
+import Card from "./common/card";
 
 export function HabitInfoCard({
     title,

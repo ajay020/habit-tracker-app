@@ -1,6 +1,6 @@
-import Button from "@/src/components/Button";
 import CategorySelector from "@/src/components/CategorySelector";
 import ColorSelector from "@/src/components/ColorSeletor";
+import Button from "@/src/components/common/Button";
 import IconSelector from "@/src/components/IconSelector";
 import WeeklyDaySelector from "@/src/components/WeeklyDaySelector";
 import { useHabitStore } from "@/src/lib/habitStore";

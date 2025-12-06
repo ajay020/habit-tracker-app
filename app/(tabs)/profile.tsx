@@ -1,4 +1,4 @@
-import Card from "@/src/components/card";
+import Card from "@/src/components/common/card";
 import { LanguageSelector } from "@/src/components/LanguageSelector";
 import ThemeBottomSheet from "@/src/components/ThemeSheet";
 import { useTranslation } from "@/src/hooks/userTranslation";

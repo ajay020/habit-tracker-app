@@ -1,11 +1,10 @@
-import Button from "@/src/components/Button";
+import Button from "@/src/components/common/Button";
 import WeeklyDaySelector from "@/src/components/WeeklyDaySelector";
 import { useHabitStore } from "@/src/lib/habitStore";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 
 import CategorySelector from "@/src/components/CategorySelector";
 import ColorSelector from "@/src/components/ColorSeletor";
@@ -19,7 +18,6 @@ export default function CreateHabitScreen() {
     const loadCategories = useHabitStore((s) => s.loadCategories);
     const categories = useHabitStore((s) => s.categories);
 
-    // ------------ Form fields ------------ //
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [scheduleType, setScheduleType] = useState<"daily" | "weekly">("daily");
@@ -123,7 +121,6 @@ export default function CreateHabitScreen() {
                 </View>
 
                 {/* ---------- CATEGORY SELECT ---------- */}
-                <Text className="text-gray-700 dark:text-gray-300 mb-2 font-medium">Category</Text>
                 <CategorySelector
                     categories={categories}
                     selectedCategory={selectedCategory}
@@ -131,14 +128,12 @@ export default function CreateHabitScreen() {
                 />
 
                 {/* ---------- ICON SELECT ---------- */}
-                <Text className="text-gray-700 dark:text-gray-300 mb-2 font-medium">Icon</Text>
                 <IconSelector
                     selectedIcon={selectedIcon}
                     onSelect={setSelectedIcon}
                 />
 
                 {/* ---------- COLOR SELECT ---------- */}
-                <Text className="text-gray-700 dark:text-gray-300 mb-2 font-medium">Color</Text>
                 <ColorSelector
                     selectedColor={selectedColor}
                     onSelect={setSelectedColor}

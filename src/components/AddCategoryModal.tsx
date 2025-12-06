@@ -29,8 +29,6 @@ export default function AddCategoryModal({ visible, onClose, category }: AddCate
     const [selectedIcon, setSelectedIcon] = useState("folder");
     const [selectedColor, setSelectedColor] = useState("#3b82f6");
 
-    console.log("Editing category:", category);
-
     // Pre-fill when editing 
     useEffect(() => {
 
@@ -54,13 +52,13 @@ export default function AddCategoryModal({ visible, onClose, category }: AddCate
         if (!title.trim()) return;
 
         if (category) {
-            // ✏️ EDIT MODE
+            //  EDIT MODE
             await updateCategory(category.id, {
                 title,
                 icon: selectedIcon,
             });
         } else {
-            // ➕ ADD MODE
+            //  ADD MODE
             await addCategory({
                 title,
                 icon: selectedIcon,
@@ -84,8 +82,8 @@ export default function AddCategoryModal({ visible, onClose, category }: AddCate
 
             {/* Bottom Sheet */}
             <View className="absolute bottom-0 left-0 right-0 top-0 bg-white dark:bg-gray-900 rounded-t-2xl p-6 shadow-xl">
-                <Text className="text-xl font-bold text-text dark:text-text-dark mb-4">
-                    Add Category
+                <Text className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                    {category ? "Edit Category" : "Add Category"}
                 </Text>
 
                 <ScrollView className="max-h-[100%]" showsVerticalScrollIndicator={false}>

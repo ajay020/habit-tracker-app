@@ -1,6 +1,6 @@
+import { useThemeStore } from "@/src/lib/themeStore";
 import React from "react";
 import { View, ViewStyle } from "react-native";
-import { useThemeStore } from "../lib/themeStore";
 
 type CardProps = {
     children: React.ReactNode;

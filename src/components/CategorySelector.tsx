@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { Category } from "../types/habit.types";
 import AddCategoryModal from "./AddCategoryModal";
-import Button from "./common/Button";
 
 type Props = {
     categories: Category[];
@@ -35,13 +34,8 @@ export default function CategorySelector({ categories, selectedCategory, onSelec
                         <Text className=" text-sm pl-2 text-gray-800 dark:text-gray-200">{cat.title}</Text>
                     </TouchableOpacity>
                 ))}
-                <Button
-                    className=" border-y-gray-400 dark:border-x-gray-600"
-                    variant="outline"
-                    size="sm"
-                    label="+"
-                    onPress={() => setShowAddCategory(true)}
-                />
+                {/* // Add Category Button */}
+                <AddButton onPress={() => setShowAddCategory(true)} />
             </View>
             <AddCategoryModal
                 visible={showAddCategory}
@@ -50,3 +44,19 @@ export default function CategorySelector({ categories, selectedCategory, onSelec
         </View>
     );
 }
+
+
+const AddButton = ({ onPress }: { onPress: () => void }) => {
+    return (
+        <TouchableOpacity
+            onPress={onPress}
+            className="flex-row items-center px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-600"
+        >
+            <FontAwesome
+                name="plus"
+                size={14}
+                color={"#6b7280"}
+            />
+        </TouchableOpacity>
+    )
+}   

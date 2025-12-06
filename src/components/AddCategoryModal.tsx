@@ -1,7 +1,8 @@
 import { Feather } from "@expo/vector-icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Modal, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { useHabitStore } from "../lib/habitStore";
+import { useCategoryStore } from "../lib/categorySotre";
+import { Category } from "../types/habit.types";
 
 const ICONS = [
     "folder", "heart", "star", "book", "briefcase", "flag",
@@ -13,15 +14,35 @@ const COLORS = [
     "#3b82f6", "#8b5cf6", "#ec4899", "#6b7280",
 ];
 
-export default function AddCategoryModal({ visible, onClose }: {
+type AddCategoryModalProps = {
     visible: boolean;
     onClose: () => void;
-}) {
-    const addCategory = useHabitStore((s) => s.addCategory);
+    category?: Category | null;
+};
+
+
+export default function AddCategoryModal({ visible, onClose, category }: AddCategoryModalProps) {
+    const addCategory = useCategoryStore((s) => s.addCategory);
+    const updateCategory = useCategoryStore((s) => s.updateCategory);
 
     const [title, setTitle] = useState("");
     const [selectedIcon, setSelectedIcon] = useState("folder");
     const [selectedColor, setSelectedColor] = useState("#3b82f6");
+
+    console.log("Editing category:", category);
+
+    // Pre-fill when editing 
+    useEffect(() => {
+
+
+        if (category) {
+            setTitle(category.title);
+            setSelectedIcon(category.icon);
+        } else {
+            setTitle("");
+            setSelectedIcon("folder");
+        }
+    }, [category]);
 
     const resetState = () => {
         setTitle("");
@@ -32,13 +53,23 @@ export default function AddCategoryModal({ visible, onClose }: {
     const handleSave = async () => {
         if (!title.trim()) return;
 
-        await addCategory({
-            title,
-            icon: selectedIcon,
-            color: selectedColor,
-        });
+        if (category) {
+            // ✏️ EDIT MODE
+            await updateCategory(category.id, {
+                title,
+                icon: selectedIcon,
+            });
+        } else {
+            // ➕ ADD MODE
+            await addCategory({
+                title,
+                icon: selectedIcon,
+                color: selectedColor,
+            });
 
-        resetState();
+            resetState();
+        }
+
         onClose();
     };
 

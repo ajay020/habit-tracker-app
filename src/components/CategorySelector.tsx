@@ -1,8 +1,10 @@
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
+import { useCategoryStore } from "../lib/categorySotre";
 import { Category } from "../types/habit.types";
 import AddCategoryModal from "./AddCategoryModal";
+import CategoryActionsModal from "./CategoryActionModal";
 
 type Props = {
     categories: Category[];
@@ -12,6 +14,10 @@ type Props = {
 
 export default function CategorySelector({ categories, selectedCategory, onSelect }: Props) {
     const [showAddCategory, setShowAddCategory] = useState(false);
+    const [categoryForActions, setCategoryForActions] = useState<Category | null>(null);
+    const [editCategory, setEditCategory] = useState<Category | null>(null);
+
+    const deleteCategory = useCategoryStore((s) => s.deleteCategory);
 
     return (
         <View className="mb-6">
@@ -20,6 +26,10 @@ export default function CategorySelector({ categories, selectedCategory, onSelec
                 {categories.map((cat) => (
                     <TouchableOpacity
                         key={cat.id}
+                        onLongPress={() => {
+                            setCategoryForActions(cat)
+                            setEditCategory(cat)
+                        }}
                         onPress={() => onSelect(cat.id)}
                         className={`flex-row items-center px-2 py-2 rounded-xl border 
                             ${selectedCategory === cat.id
@@ -39,7 +49,25 @@ export default function CategorySelector({ categories, selectedCategory, onSelec
             </View>
             <AddCategoryModal
                 visible={showAddCategory}
-                onClose={() => setShowAddCategory(false)}
+                category={editCategory}        // ← null = add mode, object = edit
+                onClose={() => {
+                    setShowAddCategory(false);
+                    setEditCategory(null);
+                }}
+            />
+
+            {/* EDIT / DELETE DIALOG */}
+            <CategoryActionsModal
+                visible={!!categoryForActions}
+                onClose={() => setCategoryForActions(null)}
+                onEdit={() => {
+                    setShowAddCategory(true);
+                }}
+                onDelete={() => {
+                    if (categoryForActions) {
+                        deleteCategory(categoryForActions?.id!);
+                    }
+                }}
             />
         </View>
     );

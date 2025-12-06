@@ -3,6 +3,7 @@ import ColorSelector from "@/src/components/ColorSeletor";
 import Button from "@/src/components/common/Button";
 import IconSelector from "@/src/components/IconSelector";
 import WeeklyDaySelector from "@/src/components/WeeklyDaySelector";
+import { useCategoryStore } from "@/src/lib/categorySotre";
 import { useHabitStore } from "@/src/lib/habitStore";
 import { Habit } from "@/src/types/habit.types";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -18,7 +19,7 @@ export default function EditHabitScreen() {
     const habit = useHabitStore((s) => s.findHabitInStore(Number(id)));
     const updateHabitInDB = useHabitStore((s) => s.updateHabit);
 
-    const categories = useHabitStore((s) => s.categories);
+    const categories = useCategoryStore((s) => s.categories);
 
     if (!habit) return <Text>Habit not found</Text>;
 

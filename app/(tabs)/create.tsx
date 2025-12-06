@@ -11,12 +11,13 @@ import ColorSelector from "@/src/components/ColorSeletor";
 import IconSelector from "@/src/components/IconSelector";
 import { Habit } from "@/src/types/habit.types";
 import { useEffect } from "react";
+import { useCategoryStore } from "@/src/lib/categorySotre";
 
 export default function CreateHabitScreen() {
     const router = useRouter();
     const addHabitToDB = useHabitStore((s) => s.addHabit);
-    const loadCategories = useHabitStore((s) => s.loadCategories);
-    const categories = useHabitStore((s) => s.categories);
+    const loadCategories = useCategoryStore((s) => s.loadCategories);
+    const categories = useCategoryStore((s) => s.categories);
 
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");

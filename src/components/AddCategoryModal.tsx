@@ -135,8 +135,8 @@ export default function AddCategoryModal({ visible, onClose, category }: AddCate
                         className="bg-primary py-3 rounded-xl mt-2"
                         onPress={handleSave}
                     >
-                        <Text className="text-center text-white font-semibold text-lg">
-                            Save Category
+                       <Text className="text-center text-white text-base">
+                            {category ? "Save Changes" : "Add Category"}
                         </Text>
                     </TouchableOpacity>
 

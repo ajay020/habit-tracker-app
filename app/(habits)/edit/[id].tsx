@@ -2,10 +2,12 @@ import CategorySelector from "@/src/components/CategorySelector";
 import ColorSelector from "@/src/components/ColorSeletor";
 import Button from "@/src/components/common/Button";
 import IconSelector from "@/src/components/IconSelector";
+import ReminderSetter from "@/src/components/ReminderSetter";
 import WeeklyDaySelector from "@/src/components/WeeklyDaySelector";
 import { useCategoryStore } from "@/src/lib/categorySotre";
 import { useHabitStore } from "@/src/lib/habitStore";
 import { Habit } from "@/src/types/habit.types";
+import { cancelScheduledNotification, scheduleHabitNotification } from "@/src/utils/notifications";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { ScrollView, Text, TextInput, View } from "react-native";
@@ -23,8 +25,8 @@ export default function EditHabitScreen() {
 
     if (!habit) return <Text>Habit not found</Text>;
 
-    const [title, setTitle] = useState(habit.title);
-    const [description, setDescription] = useState(habit.description);
+    const [title, setTitle] = useState(habit.title || "");
+    const [description, setDescription] = useState(habit.description || "");
     const [scheduleType, setScheduleType] = useState<"daily" | "weekly">(
         habit.scheduleType
     );
@@ -45,6 +47,18 @@ export default function EditHabitScreen() {
         habit.color || "#4ade80"
     );
 
+    const [enableReminder, setEnableReminder] = useState(
+        !!habit.notificationId // enabled if it has a notification
+    );
+
+    const [reminderTime, setReminderTime] = useState(
+        habit.reminderTime || "09:00"
+    );
+
+    const [reminderMessage, setReminderMessage] = useState(
+        habit.reminderMessage || habit.title
+    );
+
     const toggleDay = (dayId: number) => {
         setSelectedDays((prev) =>
             prev.includes(dayId)
@@ -53,11 +67,32 @@ export default function EditHabitScreen() {
         );
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!title.trim()) return;
 
+        let notificationId = habit.notificationId;
+
+        if (enableReminder) {
+            // Cancel old notification if exists
+            if (notificationId) {
+                await cancelScheduledNotification(notificationId);
+            }
+
+            // Schedule new notification
+            notificationId = await scheduleHabitNotification(
+                reminderTime,
+                reminderMessage || title
+            );
+        } else {
+            // If reminder turned off, cancel existing notification
+            if (notificationId) {
+                await cancelScheduledNotification(notificationId);
+            }
+            notificationId = null;
+        }
+
         updateHabitInDB(Number(id), {
-            id: Number(id),
+            ...habit,
             title,
             description,
             scheduleType,
@@ -65,6 +100,9 @@ export default function EditHabitScreen() {
             categoryId: selectedCategory,
             icon: selectedIcon,
             color: selectedColor,
+            notificationId,
+            reminderTime,
+            reminderMessage,
         } as Habit);
 
         router.back();
@@ -84,7 +122,8 @@ export default function EditHabitScreen() {
                 {/* Title */}
                 <Text className="text-text dark:text-text-dark mb-1">Title</Text>
                 <TextInput
-                    className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 text-text dark:text-text-dark mb-4"
+                    className="border border-gray-300 dark:border-gray-600
+                     rounded-lg p-3 text-text dark:text-text-dark mb-4"
                     value={title}
                     onChangeText={setTitle}
                     placeholder="Habit name..."
@@ -96,7 +135,7 @@ export default function EditHabitScreen() {
                 <TextInput
                     className="border border-gray-300 dark:border-gray-600 rounded-lg p-3
                     text-text dark:text-text-dark mb-4"
-                    value={description}
+                    value={description ?? ""}
                     onChangeText={setDescription}
                     placeholder="Short description..."
                     placeholderTextColor="#999"
@@ -145,6 +184,16 @@ export default function EditHabitScreen() {
                         onToggle={toggleDay}
                     />
                 )}
+
+                {/* 🔔 REMINDER SECTION */}
+                <ReminderSetter
+                    enabled={enableReminder}
+                    onToggle={setEnableReminder}
+                    time={reminderTime}
+                    onTimeChange={setReminderTime}
+                    message={reminderMessage}
+                    onMessageChange={setReminderMessage}
+                />
 
                 {/* Save / Cancel */}
                 <Button

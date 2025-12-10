@@ -1,15 +1,19 @@
 export interface Habit {
     id: number;
     title: string;
-    description?: string;
+    description?: string | null;
     scheduleType: 'daily' | 'weekly';
-    daysOfWeek?: string;
-    icon?: string;
-    color?: string;
-    categoryId?: number;
+    daysOfWeek?: string | null;
+    icon?: string | null;
+    color?: string | null;
+    categoryId?: number | null;
     startDate: string;
     createdAt: string;
+    reminderTime?: string | null;
+    reminderMessage?: string | null;
+    notificationId?: string | null;
 }
+
 
 // Extended Habit type with category data (for display purposes)
 export interface HabitWithCategory extends Habit {

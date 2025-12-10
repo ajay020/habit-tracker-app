@@ -24,9 +24,12 @@ export function initializeDatabase() {
             description TEXT,
             scheduleType TEXT NOT NULL DEFAULT 'daily',
             daysOfWeek TEXT,
+            notificationId TEXT,
             icon TEXT DEFAULT 'check-circle',
             color TEXT DEFAULT '#3b82f6',
             categoryId INTEGER,
+            reminderTime TEXT,
+            reminderMessage TEXT,
             startDate TEXT DEFAULT (date('now')),
             createdAt TEXT DEFAULT (datetime('now')),
             FOREIGN KEY (categoryId) REFERENCES categories(id) ON DELETE SET NULL

@@ -29,8 +29,11 @@ export const HabitDB = {
     async addHabit(habit: Omit<Habit, "id" | "createdAt" | "startDate">): Promise<void> {
         await db.runAsync(
             `INSERT INTO habits 
-            (title, description, scheduleType, daysOfWeek, icon, color, categoryId, startDate, createdAt)
-             VALUES (?, ?, ?, ?, ?, ?, ?, date('now'), datetime('now'))`,
+            (title, description, scheduleType,
+             daysOfWeek, icon, color,
+             categoryId,notificationId,
+             reminderTime,reminderMessage, startDate, createdAt)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, date('now'), datetime('now'))`,
             [
                 habit.title,
                 habit.description ?? null,
@@ -38,7 +41,10 @@ export const HabitDB = {
                 habit.daysOfWeek ?? null,
                 habit.icon || 'check-circle',
                 habit.color || '#3b82f6',
-                habit.categoryId || null
+                habit.categoryId || null,
+                habit.notificationId || null,
+                habit.reminderTime || null,
+                habit.reminderMessage || null
             ]
         );
     },

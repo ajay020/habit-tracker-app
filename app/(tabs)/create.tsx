@@ -9,9 +9,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import CategorySelector from "@/src/components/CategorySelector";
 import ColorSelector from "@/src/components/ColorSeletor";
 import IconSelector from "@/src/components/IconSelector";
-import { Habit } from "@/src/types/habit.types";
-import { useEffect } from "react";
+import ReminderSetter from "@/src/components/ReminderSetter";
 import { useCategoryStore } from "@/src/lib/categorySotre";
+import { Habit } from "@/src/types/habit.types";
+import { registerForPushNotifications, scheduleHabitNotification } from "@/src/utils/notifications";
+import { useEffect } from "react";
+
 
 export default function CreateHabitScreen() {
     const router = useRouter();
@@ -28,6 +31,10 @@ export default function CreateHabitScreen() {
     const [selectedIcon, setSelectedIcon] = useState("check-circle");
     const [selectedColor, setSelectedColor] = useState("#3b82f6");
 
+    const [enableReminder, setEnableReminder] = useState(false);
+    const [reminderTime, setReminderTime] = useState("09:00");
+    const [reminderMessage, setReminderMessage] = useState("");
+
     const toggleDay = (dayId: number) => {
         setSelectedDays((prev) =>
             prev.includes(dayId) ? prev.filter((d) => d !== dayId) : [...prev, dayId]
@@ -36,10 +43,19 @@ export default function CreateHabitScreen() {
 
     useEffect(() => {
         loadCategories();
+        // ask for notification permission
+        registerForPushNotifications()
     }, []);
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!title.trim()) return;
+
+        let notificationId: string | null = null;
+
+        // Schedule notification if enabled
+        if (enableReminder) {
+            notificationId = await scheduleHabitNotification(reminderTime, reminderMessage || title);
+        }
 
         const payload = {
             title,
@@ -49,7 +65,12 @@ export default function CreateHabitScreen() {
             icon: selectedIcon,
             color: selectedColor,
             categoryId: selectedCategory,
+            notificationId,
+            reminderTime: enableReminder ? reminderTime : null,
+            reminderMessage: enableReminder ? (reminderMessage || title) : null,
         } as Habit;
+
+        // console.log("Creating habit with payload:", payload);
 
         addHabitToDB(payload);
         router.back();
@@ -121,6 +142,17 @@ export default function CreateHabitScreen() {
 
                 </View>
 
+                {/* ---------- REMINDER SETTING ---------- */}
+
+                <ReminderSetter
+                    enabled={enableReminder}
+                    onToggle={setEnableReminder}
+                    time={reminderTime}
+                    onTimeChange={setReminderTime}
+                    message={reminderMessage}
+                    onMessageChange={setReminderMessage}
+                />
+
                 {/* ---------- CATEGORY SELECT ---------- */}
                 <CategorySelector
                     categories={categories}
@@ -145,6 +177,7 @@ export default function CreateHabitScreen() {
 
                 <View className="h-10" />
             </ScrollView>
+
         </SafeAreaView>
     );
 }

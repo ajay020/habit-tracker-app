@@ -14,7 +14,11 @@ export default function RootLayout() {
     initializeDatabase();
     useThemeStore.getState().loadThemeMode();
     loadLanguage();
-  }, []);
+     }, []);
+
+  // LogBox.ignoreLogs([
+  //   'expo-notifications: Android Push notifications'
+  // ]);
 
   return (
     <SafeAreaProvider>
